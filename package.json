@@ -1,0 +1,15 @@
+{
+  "name": "pembuat-soal-ai",
+  "version": "1.0.0",
+  "description": "A simple AI-powered question generator.",
+  "main": "netlify/functions/generate-questions.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  }
+}
