@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembuat Soal AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #f4f7fc; margin: 0; padding: 20px; }
+        .container { max-width: 700px; margin: auto; background: #fff; padding: 25px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #2b7a78; margin-bottom: 20px; }
+        label { font-weight: 600; margin-top: 10px; display: block; }
+        input, select, button, textarea { width: 100%; padding: 10px; margin: 8px 0 16px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; }
+        input[type="file"] { padding: 5px; }
+        button { background: #2b7a78; color: #fff; font-weight: bold; border: none; cursor: pointer; }
+        button:hover { background: #205e5c; }
+        .checkbox-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .checkbox-group label { font-weight: normal; display: flex; align-items: center; gap: 5px; }
+        .output { background: #f9f9f9; padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-top: 20px; white-space: pre-wrap; }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #2b7a78;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+            display: none; /* Sembunyikan secara default */
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .header-kop { text-align: center; margin-bottom: 15px; }
+        .header-kop img { max-width: 150px; height: auto; display: block; margin: 0 auto 10px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Pembuat Soal Otomatis AI</h1>
+
+    <label>Nama Sekolah:</label>
+    <input type="text" id="namaSekolah" placeholder="Misal: SDN Bojong Timur 2">
+
+    <label>Tahun Pelajaran:</label>
+    <input type="text" id="tahunPelajaran" placeholder="Misal: 2024/2025">
+
+    <label>Durasi Waktu (menit):</label>
+    <input type="number" id="durasiWaktu" placeholder="Misal: 90">
+
+    <label>Kelas:</label>
+    <input type="text" id="kelas" placeholder="Misal: 6">
+
+    <label>Mata Pelajaran:</label>
+    <input type="text" id="mapel" placeholder="Misal: IPA">
+
+    <label>Materi / Capaian Pembelajaran / Tujuan Pembelajaran:</label>
+    <textarea id="materi" placeholder="Contoh: Siswa mampu menjelaskan proses fotosintesis dan faktor-faktornya..."></textarea>
+
+    <label>Pilih AI Engine:</label>
+    <select id="apiSource">
+        <option value="openai">OpenAI (rekomendasi)</option>
+        <option value="groq">Groq</option>
+        <option value="iask">iAsk</option>
+    </select>
+
+    <label>Jenis Soal & Jumlah:</label>
+    <div class="checkbox-group">
+        <label><input type="checkbox" id="pgCheck"> Pilihan Ganda</label>
+        <input type="number" id="pgJumlah" placeholder="Jumlah" disabled>
+
+        <label><input type="checkbox" id="uraianCheck"> Uraian</label>
+        <input type="number" id="uraianJumlah" placeholder="Jumlah" disabled>
+
+        <label><input type="checkbox" id="isianCheck"> Isian</label>
+        <input type="number" id="isianJumlah" placeholder="Jumlah" disabled>
+
+        <label><input type="checkbox" id="menjodohkanCheck"> Menjodohkan</label>
+        <input type="number" id="menjodohkanJumlah" placeholder="Jumlah" disabled>
+
+        <label><input type="checkbox" id="bsCheck"> Benar/Salah</label>
+        <input type="number" id="bsJumlah" placeholder="Jumlah" disabled>
+    </div>
+
+    <label>Upload Kop Sekolah (optional):</label>
+    <input type="file" id="kopSekolah" accept="image/*">
+
+    <button id="generateBtn">Generate Soal</button>
+    <div class="loading-spinner" id="loadingSpinner"></div>
+
+
+    <div class="output" id="output">
+        </div>
+</div>
+
+<script>
+    const pgCheck = document.getElementById('pgCheck');
+    const uraianCheck = document.getElementById('uraianCheck');
+    const isianCheck = document.getElementById('isianCheck');
+    const menjodohkanCheck = document.getElementById('menjodohkanCheck');
+    const bsCheck = document.getElementById('bsCheck');
+
+    const generateBtn = document.getElementById('generateBtn');
+    const outputDiv = document.getElementById('output');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const kopSekolahInput = document.getElementById('kopSekolah');
+
+    let kopSekolahBase64 = '';
+
+    pgCheck.addEventListener('change', () => document.getElementById('pgJumlah').disabled = !pgCheck.checked);
+    uraianCheck.addEventListener('change', () => document.getElementById('uraianJumlah').disabled = !uraianCheck.checked);
+    isianCheck.addEventListener('change', () => document.getElementById('isianJumlah').disabled = !isianCheck.checked);
+    menjodohkanCheck.addEventListener('change', () => document.getElementById('menjodohkanJumlah').disabled = !menjodohkanCheck.checked);
+    bsCheck.addEventListener('change', () => document.getElementById('bsJumlah').disabled = !bsCheck.checked);
+
+    kopSekolahInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                kopSekolahBase64 = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            kopSekolahBase64 = '';
+        }
+    });
+
+    generateBtn.addEventListener('click', async () => {
+        outputDiv.innerHTML = '';
+        loadingSpinner.style.display = 'block';
+        generateBtn.disabled = true;
+        generateBtn.textContent = 'Membuat Soal...';
+
+        const namaSekolah = document.getElementById('namaSekolah').value;
+        const tahunPelajaran = document.getElementById('tahunPelajaran').value;
+        const durasiWaktu = document.getElementById('durasiWaktu').value;
+        const kelas = document.getElementById('kelas').value;
+        const mapel = document.getElementById('mapel').value;
+        const materi = document.getElementById('materi').value;
+        const apiSource = document.getElementById('apiSource').value;
+
+        const pgJumlah = pgCheck.checked ? parseInt(document.getElementById('pgJumlah').value) || 0 : 0;
+        const uraianJumlah = uraianCheck.checked ? parseInt(document.getElementById('uraianJumlah').value) || 0 : 0;
+        const isianJumlah = isianCheck.checked ? parseInt(document.getElementById('isianJumlah').value) || 0 : 0;
+        const menjodohkanJumlah = menjodohkanCheck.checked ? parseInt(document.getElementById('menjodohkanJumlah').value) || 0 : 0;
+        const bsJumlah = bsCheck.checked ? parseInt(document.getElementById('bsJumlah').value) || 0 : 0;
+
+        if (!materi.trim()) {
+            outputDiv.innerHTML = '<p style="color: red;">Error: Materi tidak boleh kosong.</p>';
+            loadingSpinner.style.display = 'none';
+            generateBtn.disabled = false;
+            generateBtn.textContent = 'Generate Soal';
+            return;
+        }
+        if (pgJumlah === 0 && uraianJumlah === 0 && isianJumlah === 0 && menjodohkanJumlah === 0 && bsJumlah === 0) {
+            outputDiv.innerHTML = '<p style="color: red;">Error: Pilih setidaknya satu jenis soal dengan jumlah lebih dari 0.</p>';
+            loadingSpinner.style.display = 'none';
+            generateBtn.disabled = false;
+            generateBtn.textContent = 'Generate Soal';
+            return;
+        }
+
+        try {
+            // PENTING: URL ini akan secara otomatis di-resolve oleh Netlify ke fungsi Anda
+            const response = await fetch('/.netlify/functions/generate-questions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    namaSekolah,
+                    tahunPelajaran,
+                    durasiWaktu,
+                    kelas,
+                    mapel,
+                    materi,
+                    apiSource,
+                    pgJumlah,
+                    uraianJumlah,
+                    isianJumlah,
+                    menjodohkanJumlah,
+                    bsJumlah
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Terjadi kesalahan pada server fungsi.');
+            }
+
+            const data = await response.json();
+
+            let finalOutputHtml = '';
+
+            if (kopSekolahBase64) {
+                finalOutputHtml += `<div class="header-kop"><img src="${kopSekolahBase64}" alt="Kop Sekolah"></div>`;
+            }
+
+            finalOutputHtml += data.header;
+            finalOutputHtml += data.questions.replace(/\n/g, '<br>');
+
+            outputDiv.innerHTML = finalOutputHtml;
+
+        } catch (error) {
+            console.error('Error generating questions:', error);
+            outputDiv.innerHTML = `<p style="color: red;">Terjadi kesalahan: ${error.message}</p>`;
+        } finally {
+            loadingSpinner.style.display = 'none';
+            generateBtn.disabled = false;
+            generateBtn.textContent = 'Generate Soal';
+        }
+    });
+</script>
+
+</body>
+</html>
