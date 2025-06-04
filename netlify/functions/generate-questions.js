@@ -44,13 +44,13 @@ exports.handler = async function(event, context) {
     promptText += `Durasi Ujian: ${durasiWaktu || 'Tidak disebutkan'} menit\n\n`;
 
     promptText += `--- INSTRUKSI PENTING UNTUK PEMBUATAN SOAL ---\n`;
-    promptText += `- **PATUHI JUMLAH SOAL DENGAT SANGAT KETAT** untuk setiap jenis yang diminta.\n`;
+    promptText += `- **PATUHI JUMLAH SOAL DENGAN SANGAT KETAT** untuk setiap jenis yang diminta. Jika diminta 5 soal, berikan TEPAT 5 soal.\n`;
     promptText += `- **Fokuskan konten soal pada materi yang diberikan.** Jangan menyimpang dari materi.\n`;
     promptText += `- Gunakan bahasa Indonesia yang baku, jelas, dan sesuai untuk konteks ujian sekolah.\n`;
-    promptText += `- Berikan nomor urut pada setiap soal dengan format "1.", "2.", dst.\n`;
-    promptText += `- Untuk soal pilihan ganda, pastikan ada 4 opsi (A, B, C, D) dan kunci jawaban di baris baru setelah opsi.\n`;
-    promptText += `- Untuk soal benar/salah, pastikan ada pernyataan dan kunci jawaban di baris baru setelah pernyataan.\n`;
-    promptText += `- Untuk soal menjodohkan, berikan dua daftar (misal: "Kolom A" dan "Kolom B") dan instruksi yang jelas.\n\n`;
+    promptText += `- Berikan nomor urut pada setiap soal dengan format "1.", "2.", dst. Dimulai dari 1 untuk setiap bagian jenis soal baru.\n`;
+    promptText += `- Untuk soal pilihan ganda, pastikan ada 4 opsi (A, B, C, D) dan kunci jawaban di baris baru setelah opsi, contoh: "Kunci: [Huruf Kunci]".\n`;
+    promptText += `- Untuk soal benar/salah, pastikan ada pernyataan dan kunci jawaban di baris baru setelah pernyataan, contoh: "Kunci: [Benar/Salah]".\n`;
+    promptText += `- Untuk soal menjodohkan, berikan dua daftar (misal: "Kolom A" dan "Kolom B") dan instruksi yang jelas. Pastikan jumlah item di Kolom A dan B sesuai dengan jumlah soal yang diminta.\n\n`;
 
     promptText += `--- JENIS DAN JUMLAH SOAL YANG DIMINTA ---\n`;
     if (pgJumlah > 0) promptText += `- Pilihan Ganda (PG): ${pgJumlah} soal\n`;
@@ -131,7 +131,6 @@ exports.handler = async function(event, context) {
         const data = await response.json();
         const generatedText = data.choices[0].message.content;
 
-        // --- BAGIAN HEADER SOAL YANG DIPERBARUI ---
         const headerSoal = `
             <div style="text-align: center; margin-bottom: 20px; font-family: 'Poppins', sans-serif;">
                 <p style="margin: 0; font-size: 0.9em;">PEMERINTAH KABUPATEN PURWAKARTA</p>
@@ -164,7 +163,6 @@ exports.handler = async function(event, context) {
                 <hr style="border-top: 1px solid #333; margin: 20px 0;">
             </div>
         `;
-        // --- AKHIR BAGIAN HEADER SOAL YANG DIPERBARUI ---
 
         return {
             statusCode: 200,
