@@ -6,58 +6,222 @@
     <title>Pembuat Soal AI</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Poppins', sans-serif; background: #f4f7fc; margin: 0; padding: 20px; }
-        .container { max-width: 700px; margin: auto; background: #fff; padding: 25px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: #2b7a78; margin-bottom: 20px; }
-        label { font-weight: 600; margin-top: 10px; display: block; }
-        input, select, button, textarea { width: 100%; padding: 10px; margin: 8px 0 16px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; }
-        input[type="file"] { padding: 5px; }
-        button { background: #2b7a78; color: #fff; font-weight: bold; border: none; cursor: pointer; }
-        button:hover { background: #205e5c; }
-        .checkbox-group { display: flex; gap: 10px; flex-wrap: wrap; }
-        .checkbox-group label { font-weight: normal; display: flex; align-items: center; gap: 5px; }
-        .output { background: #f9f9f9; padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-top: 20px; white-space: pre-wrap; }
+        /* Gaya dasar untuk body */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f4f7fc;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* Gaya untuk container utama aplikasi */
+        .container {
+            max-width: 700px;
+            width: 100%;
+            margin: auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+
+        /* Gaya untuk judul utama */
+        h1 {
+            text-align: center;
+            color: #2b7a78;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        /* Gaya untuk label form */
+        label {
+            font-weight: 600;
+            margin-top: 10px;
+            display: block;
+            color: #333;
+        }
+
+        /* Gaya untuk input, select, button, textarea */
+        input, select, button, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        /* Gaya khusus untuk input file */
+        input[type="file"] {
+            padding: 5px;
+        }
+
+        /* Gaya untuk tombol utama (Generate Soal) */
+        button#generateBtn {
+            background: #2b7a78;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        /* Gaya saat tombol utama di-hover */
+        button#generateBtn:hover {
+            background: #205e5c;
+        }
+
+        /* Gaya untuk grup checkbox (jenis soal) */
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        /* Gaya untuk label di dalam grup checkbox */
+        .checkbox-group label {
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: #555;
+        }
+
+        /* Gaya untuk area output hasil soal */
+        .output {
+            background: #f9f9f9;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            min-height: 100px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Gaya untuk spinner loading */
         .loading-spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
             border-top: 4px solid #2b7a78;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
-            display: none; /* Sembunyikan secara default */
+            margin: 15px auto;
+            display: none;
         }
+
+        /* Keyframes untuk animasi spinner */
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .header-kop { text-align: center; margin-bottom: 15px; }
-        .header-kop img { max-width: 150px; height: auto; display: block; margin: 0 auto 10px; }
+
+        /* Gaya untuk kop sekolah di header output */
+        .header-kop {
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .header-kop img {
+            max-width: 150px;
+            height: auto;
+            display: block;
+            margin: 0 auto 10px;
+            border-radius: 8px;
+        }
+
+        /* Gaya untuk grup tombol aksi (Print, Export, Download) */
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .action-buttons button {
+            flex: 1;
+            min-width: 120px;
+            background: #66b2b2;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+
+        .action-buttons button:hover {
+            background: #509090;
+        }
+
+        /* Media queries untuk responsivitas */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            .container {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            input, select, button, textarea {
+                font-size: 13px;
+            }
+            .checkbox-group {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
     </style>
+    <!-- Library html2pdf.js untuk export PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 <div class="container">
     <h1>Pembuat Soal Otomatis AI</h1>
 
-    <label>Nama Sekolah:</label>
+    <label for="namaSekolah">Nama Sekolah:</label>
     <input type="text" id="namaSekolah" placeholder="Misal: SDN Bojong Timur 2">
 
-    <label>Tahun Pelajaran:</label>
+    <label for="tahunPelajaran">Tahun Pelajaran:</label>
     <input type="text" id="tahunPelajaran" placeholder="Misal: 2024/2025">
 
-    <label>Durasi Waktu (menit):</label>
+    <label for="durasiWaktu">Durasi Waktu (menit):</label>
     <input type="number" id="durasiWaktu" placeholder="Misal: 90">
 
-    <label>Kelas:</label>
+    <label for="kelas">Kelas:</label>
     <input type="text" id="kelas" placeholder="Misal: 6">
 
-    <label>Mata Pelajaran:</label>
+    <label for="mapel">Mata Pelajaran:</label>
     <input type="text" id="mapel" placeholder="Misal: IPA">
 
-    <label>Materi / Capaian Pembelajaran / Tujuan Pembelajaran:</label>
+    <label for="materi">Materi / Capaian Pembelajaran / Tujuan Pembelajaran:</label>
     <textarea id="materi" placeholder="Contoh: Siswa mampu menjelaskan proses fotosintesis dan faktor-faktornya..."></textarea>
 
-    <label>Pilih AI Engine:</label>
+    <label for="apiSource">Pilih AI Engine:</label>
     <select id="apiSource">
         <option value="openai">OpenAI (rekomendasi)</option>
         <option value="groq">Groq</option>
@@ -82,7 +246,7 @@
         <input type="number" id="bsJumlah" placeholder="Jumlah" disabled>
     </div>
 
-    <label>Upload Kop Sekolah (optional):</label>
+    <label for="kopSekolah">Upload Kop Sekolah (optional):</label>
     <input type="file" id="kopSekolah" accept="image/*">
 
     <button id="generateBtn">Generate Soal</button>
@@ -90,10 +254,20 @@
 
 
     <div class="output" id="output">
-        </div>
+        <!-- Hasil soal akan ditampilkan di sini -->
+    </div>
+
+    <!-- Tombol-tombol aksi baru -->
+    <div class="action-buttons">
+        <button id="printBtn" disabled>Print Soal</button>
+        <button id="exportPdfBtn" disabled>Export PDF</button>
+        <button id="exportWordBtn" disabled>Export Word</button>
+        <button id="downloadHtmlBtn" disabled>Download HTML</button>
+    </div>
 </div>
 
 <script>
+    // Mendapatkan referensi elemen-elemen DOM
     const pgCheck = document.getElementById('pgCheck');
     const uraianCheck = document.getElementById('uraianCheck');
     const isianCheck = document.getElementById('isianCheck');
@@ -105,14 +279,30 @@
     const loadingSpinner = document.getElementById('loadingSpinner');
     const kopSekolahInput = document.getElementById('kopSekolah');
 
-    let kopSekolahBase64 = '';
+    // Tombol-tombol aksi baru
+    const printBtn = document.getElementById('printBtn');
+    const exportPdfBtn = document.getElementById('exportPdfBtn');
+    const exportWordBtn = document.getElementById('exportWordBtn');
+    const downloadHtmlBtn = document.getElementById('downloadHtmlBtn');
 
+    let kopSekolahBase64 = ''; // Variabel untuk menyimpan data gambar kop sekolah dalam format Base64
+
+    // Fungsi untuk mengaktifkan/menonaktifkan tombol aksi
+    function toggleActionButtons(enable) {
+        printBtn.disabled = !enable;
+        exportPdfBtn.disabled = !enable;
+        exportWordBtn.disabled = !enable;
+        downloadHtmlBtn.disabled = !enable;
+    }
+
+    // Event listener untuk mengaktifkan/menonaktifkan input jumlah berdasarkan checkbox
     pgCheck.addEventListener('change', () => document.getElementById('pgJumlah').disabled = !pgCheck.checked);
     uraianCheck.addEventListener('change', () => document.getElementById('uraianJumlah').disabled = !uraianCheck.checked);
     isianCheck.addEventListener('change', () => document.getElementById('isianJumlah').disabled = !isianCheck.checked);
     menjodohkanCheck.addEventListener('change', () => document.getElementById('menjodohkanJumlah').disabled = !menjodohkanCheck.checked);
     bsCheck.addEventListener('change', () => document.getElementById('bsJumlah').disabled = !bsCheck.checked);
 
+    // Event listener untuk membaca file kop sekolah yang diunggah
     kopSekolahInput.addEventListener('change', (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -126,12 +316,16 @@
         }
     });
 
+    // Event listener untuk tombol "Generate Soal"
     generateBtn.addEventListener('click', async () => {
+        // Reset tampilan output dan aktifkan indikator loading
         outputDiv.innerHTML = '';
+        toggleActionButtons(false); // Nonaktifkan tombol aksi
         loadingSpinner.style.display = 'block';
         generateBtn.disabled = true;
         generateBtn.textContent = 'Membuat Soal...';
 
+        // Mengambil nilai dari semua input form
         const namaSekolah = document.getElementById('namaSekolah').value;
         const tahunPelajaran = document.getElementById('tahunPelajaran').value;
         const durasiWaktu = document.getElementById('durasiWaktu').value;
@@ -140,12 +334,14 @@
         const materi = document.getElementById('materi').value;
         const apiSource = document.getElementById('apiSource').value;
 
+        // Mengambil jumlah soal untuk setiap jenis, pastikan di-parse sebagai integer
         const pgJumlah = pgCheck.checked ? parseInt(document.getElementById('pgJumlah').value) || 0 : 0;
         const uraianJumlah = uraianCheck.checked ? parseInt(document.getElementById('uraianJumlah').value) || 0 : 0;
         const isianJumlah = isianCheck.checked ? parseInt(document.getElementById('isianJumlah').value) || 0 : 0;
         const menjodohkanJumlah = menjodohkanCheck.checked ? parseInt(document.getElementById('menjodohkanJumlah').value) || 0 : 0;
         const bsJumlah = bsCheck.checked ? parseInt(document.getElementById('bsJumlah').value) || 0 : 0;
 
+        // Validasi input penting
         if (!materi.trim()) {
             outputDiv.innerHTML = '<p style="color: red;">Error: Materi tidak boleh kosong.</p>';
             loadingSpinner.style.display = 'none';
@@ -162,7 +358,6 @@
         }
 
         try {
-            // PENTING: URL ini akan secara otomatis di-resolve oleh Netlify ke fungsi Anda
             const response = await fetch('/.netlify/functions/generate-questions', {
                 method: 'POST',
                 headers: {
@@ -198,19 +393,162 @@
             }
 
             finalOutputHtml += data.header;
-            finalOutputHtml += data.questions.replace(/\n/g, '<br>');
+            // Mengganti newline dengan <br> untuk tampilan HTML yang benar,
+            // dan mengganti spasi ganda dengan &nbsp; untuk mempertahankan format pre-wrap
+            finalOutputHtml += data.questions.replace(/\n/g, '<br>').replace(/  /g, '&nbsp;&nbsp;');
 
             outputDiv.innerHTML = finalOutputHtml;
+            toggleActionButtons(true); // Aktifkan tombol aksi setelah soal berhasil dibuat
 
         } catch (error) {
             console.error('Error generating questions:', error);
             outputDiv.innerHTML = `<p style="color: red;">Terjadi kesalahan: ${error.message}</p>`;
+            toggleActionButtons(false); // Pastikan tombol aksi nonaktif jika ada error
         } finally {
             loadingSpinner.style.display = 'none';
             generateBtn.disabled = false;
             generateBtn.textContent = 'Generate Soal';
         }
     });
+
+    // --- Fungsionalitas Tombol Aksi Baru ---
+
+    // Fungsi untuk Print Soal
+    printBtn.addEventListener('click', () => {
+        const printContent = outputDiv.innerHTML;
+        // Membuat jendela print sementara
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write('<html><head><title>Print Soal</title>');
+        printWindow.document.write('<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">');
+        printWindow.document.write('<style>');
+        // Gaya CSS untuk print, hilangkan elemen non-soal
+        printWindow.document.write(`
+            body { font-family: 'Poppins', sans-serif; margin: 20px; color: #000; }
+            .header-kop { text-align: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+            .header-kop img { max-width: 150px; height: auto; display: block; margin: 0 auto 10px; }
+            h1 { display: none; } /* Sembunyikan judul utama aplikasi */
+            .container { box-shadow: none; padding: 0; } /* Hilangkan shadow dan padding container */
+            button, .checkbox-group, label, input, select, textarea, .loading-spinner, .action-buttons { display: none !important; } /* Sembunyikan semua elemen form dan tombol */
+            .output { background: none; border: none; margin-top: 0; padding: 0; white-space: pre-wrap; word-wrap: break-word; line-height: 1.6; }
+            hr { border-top: 1px solid #ccc; margin: 20px 0; }
+            /* Gaya untuk heading jenis soal (PG, Uraian, dll.) */
+            h2 { font-size: 1.2em; margin-top: 25px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        `);
+        printWindow.document.write('</style></head><body>');
+        printWindow.document.write(printContent);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+
+        printWindow.focus();
+        printWindow.print();
+    });
+
+
+    // Fungsi untuk Export ke PDF
+    exportPdfBtn.addEventListener('click', () => {
+        const element = document.getElementById('output');
+        const opt = {
+            margin:       [10, 10, 10, 10],
+            filename:     'soal_ujian.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, logging: true, dpi: 192, letterRendering: true },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        const tempElement = document.createElement('div');
+        tempElement.innerHTML = outputDiv.innerHTML;
+        tempElement.style.width = '210mm';
+        tempElement.style.padding = '10mm';
+        tempElement.style.boxSizing = 'border-box';
+        tempElement.style.backgroundColor = '#fff';
+
+        element.style.display = 'none';
+        document.body.appendChild(tempElement);
+
+        html2pdf().set(opt).from(tempElement).save().then(() => {
+            element.style.display = 'block';
+            document.body.removeChild(tempElement);
+        });
+    });
+
+
+    // Fungsi untuk Export ke Word (DOCX - trik HTML)
+    exportWordBtn.addEventListener('click', () => {
+        const content = outputDiv.innerHTML;
+        const filename = 'soal_ujian.doc';
+
+        const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Soal Ujian</title>
+                <style>
+                    body { font-family: 'Poppins', sans-serif; margin: 20px; line-height: 1.6; }
+                    .header-kop { text-align: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+                    .header-kop img { max-width: 150px; height: auto; display: block; margin: 0 auto 10px; }
+                    h2 { font-size: 1.2em; margin-top: 25px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+                    p { margin-bottom: 8px; }
+                    pre { white-space: pre-wrap; word-wrap: break-word; }
+                </style>
+            </head>
+            <body>
+                ${content}
+            </body>
+            </html>
+        `;
+
+        const blob = new Blob([htmlContent], { type: 'application/msword' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+
+    // Fungsi untuk Download HTML (raw output)
+    downloadHtmlBtn.addEventListener('click', () => {
+        const content = outputDiv.innerHTML;
+        const filename = 'soal_ujian.html';
+
+        const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Soal Ujian</title>
+                <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+                <style>
+                    body { font-family: 'Poppins', sans-serif; margin: 20px; line-height: 1.6; }
+                    .header-kop { text-align: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+                    .header-kop img { max-width: 150px; height: auto; display: block; margin: 0 auto 10px; }
+                    h2 { font-size: 1.2em; margin-top: 25px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+                    p { margin-bottom: 8px; }
+                    pre { white-space: pre-wrap; word-wrap: break-word; }
+                </style>
+            </head>
+            <body>
+                ${content}
+            </body>
+            </html>
+        `;
+
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+
+    // Nonaktifkan tombol aksi saat aplikasi pertama kali dimuat
+    toggleActionButtons(false);
 </script>
 
 </body>
